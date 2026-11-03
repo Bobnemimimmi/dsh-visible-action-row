@@ -11,10 +11,29 @@
  *
  * The built artifacts are committed, so path/tarball installs need no build
  * step; `prepare` re-runs this build after a git install.
+ *
+ * The stylesheet is normalized to LF before it is inlined: the artifact must
+ * not depend on the checkout's line endings (`core.autocrlf`), or a Windows
+ * build and a Linux build would publish different bytes.
  */
+import { readFile } from 'node:fs/promises'
 import { build } from 'esbuild'
 
 const PACKAGE_ID = 'dsh-visible-action-row'
+
+/** Inline `.css` as an LF-normalized string so the bundle is byte-stable. */
+const normalizedCssText = {
+  name: 'normalized-css-text',
+  setup(esbuild) {
+    esbuild.onLoad({ filter: /\.css$/ }, async (args) => {
+      const text = await readFile(args.path, 'utf8')
+      return {
+        contents: `export default ${JSON.stringify(text.replace(/\r\n?/g, '\n'))}`,
+        loader: 'js',
+      }
+    })
+  },
+}
 
 const clientBanner = [
   `window.__ModuleLoader__.load({`,
@@ -47,7 +66,7 @@ await Promise.all([
     format: 'cjs',
     platform: 'browser',
     target: 'es2018',
-    loader: { '.css': 'text' },
+    plugins: [normalizedCssText],
     banner: { js: clientBanner },
     footer: { js: clientFooter },
     // `lib/client.js` is a browser classic script, never a Node module:
