@@ -1,31 +1,32 @@
 /**
- * dsh-always-status-bar — Browser half (the `./client` bundle).
+ * dsh-visible-action-row — Browser half (the `./client` bundle).
  *
  * Classic-script bundle: registers a lazy factory with
  * `window.__ModuleLoader__` (the DSH client module system). The factory
  * returns the Cordis plugin shape the boot Loader imports; `apply` injects
- * one `<style data-plugin>` tag whose single rule keeps the native message
- * status line visible.
+ * one `<style data-plugin>` tag whose rules keep the native per-message
+ * action row visible.
  *
- * Facts located in the current DSH checkout this plugin targets:
- * - User messages: `packages/client/ui-conversation/src/client/chat/
- *   MessageItem.tsx` renders the clock inside a `[data-time-hover-root]` row
- *   (`MessageIconActions`, `clock="start"`, CSS module class `timeStart`).
- * - Assistant messages: `chat/TurnTailNodeView.tsx` renders the clock inside
- *   the turn tail's `[data-time-hover-root]` scope (`clock="end"`, class
- *   `timeEnd`).
- * - Hide mechanism: `chat/MessageIconActions.module.css` hides the labels
- *   with `opacity: 0` inside `@media (hover: hover)` and reveals them on
- *   `:hover` / `:focus-within`. The clock spans are always in the DOM — no
- *   conditional rendering — so a pure CSS visibility override is the whole
- *   feature. No DOM scanning, no observers, no polling.
- * - The client tsdown pipeline builds CSS modules with
- *   `cssModules.pattern = '[hash]_[local]'`, so the built class names
- *   preserve the local names (`[hash]_timeStart` / `[hash]_timeEnd`); the
- *   override targets the stable `data-time-hover-root` anchor plus those
- *   preserved class substrings (see `always-status-bar.css`).
+ * Facts located in the DSH source checkout (0.2.2-alpha.2) and cross-checked
+ * against the packaged desktop bundle (app.asar, 0.2.1-rc.5); both ship the
+ * same `packages/client/ui-chat` browser bundle:
+ * - The actions row is `MessageIconActions`' root div and carries the stable
+ *   `data-clock="start" | "end"` attribute (`ui-chat/src/client/chat/
+ *   MessageIconActions.tsx`).
+ * - Assistant rows: `chat/TurnTailNodeView.tsx` sets
+ *   `data-actions-reveal="always"` on the newest response and `"hover"`
+ *   otherwise.
+ * - User rows: hidden by `:has(~ :is([data-chat-flow-kind='user'],
+ *   [data-chat-flow-kind='steering']))` in `MessageIconActions.module.css`,
+ *   so only the last user row stays visible; every flow row carries
+ *   `data-chat-flow-kind` (`chat/ChatNodeSeat.tsx`).
+ * - Hiding is opacity-only (`opacity: 0` inside `@media (hover: hover)`),
+ *   so a pure CSS visibility override is the whole feature: no DOM scanning,
+ *   no observers, no polling, no React changes.
+ * - CSS-module class names are hashed at build time, so the override targets
+ *   the stable `data-*` anchors instead (see `visible-action-row.css`).
  */
-import css from './always-status-bar.css'
+import css from './visible-action-row.css'
 
 // The bundle is a classic script wrapped by build.mjs in the same handoff
 // shape as DSH's own client bundles: `var module = { exports: {} }` is
@@ -35,13 +36,13 @@ import css from './always-status-bar.css'
 declare const module: { exports: { name: string; apply: typeof apply } }
 
 /** Cordis plugin name; must equal the package name (the graph row id). */
-const name = 'dsh-always-status-bar'
+const name = 'dsh-visible-action-row'
 
 /** Stable style tag id, mirroring the native `data-plugin-css` naming (`<id>/<file>`). */
-const STYLE_TAG_ID = 'dsh-always-status-bar/always-status-bar.css'
+const STYLE_TAG_ID = 'dsh-visible-action-row/visible-action-row.css'
 
 /** Minimal structural view of the Cordis context this plugin uses. */
-interface StatusBarPluginContext {
+interface VisibleActionRowContext {
   effect(execute: () => () => void, label: string): unknown
 }
 
@@ -53,7 +54,7 @@ interface StatusBarPluginContext {
  * `data-plugin-css` uniqueness guard).
  * @param ctx - the client plugin context.
  */
-function apply(ctx: StatusBarPluginContext): void {
+function apply(ctx: VisibleActionRowContext): void {
   const existing = document.querySelector<HTMLStyleElement>(`style[data-plugin-css=${JSON.stringify(STYLE_TAG_ID)}]`)
   const style: HTMLStyleElement = existing ?? document.createElement('style')
   if (existing === null) {
@@ -64,7 +65,7 @@ function apply(ctx: StatusBarPluginContext): void {
   }
   ctx.effect(() => () => {
     style.remove()
-  }, `${name}: always-visible status bar style`)
+  }, `${name}: always-visible action row style`)
 }
 
 module.exports = { name, apply }

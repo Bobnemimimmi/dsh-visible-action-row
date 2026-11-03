@@ -5,7 +5,7 @@
  * - `dsh.bundle.patch` → the `dsh plugin add` flow appends this package to
  *   `dsh.profile.bundles` and composes the patch layer.
  * - `dsh.client.platform: 'web'` + `exports["./client"]` → the client-modules
- *   node half serves the browser bundle at `/plugins/dsh-always-status-bar/
+ *   node half serves the browser bundle at `/plugins/dsh-visible-action-row/
  *   client.js` and rosters it in `window.__DSH_BOOT__`.
  * - The patch inserts exactly one row (id + name = package name) and
  *   overrides nothing from earlier layers.
@@ -19,7 +19,7 @@ const patch = readFileSync(new URL('cordis.patch.yml', root), 'utf8')
 
 describe('package manifest', () => {
   it('is version 0.1.0 under the plugin name', () => {
-    expect(pkg.name).toBe('dsh-always-status-bar')
+    expect(pkg.name).toBe('dsh-visible-action-row')
     expect(pkg.version).toBe('0.1.0')
   })
 
@@ -49,8 +49,8 @@ describe('package manifest', () => {
 describe('cordis.patch.yml', () => {
   it('inserts exactly one row, id and name equal to the package name', () => {
     expect(patch).toContain('- insert:')
-    expect(patch).toContain('id: dsh-always-status-bar')
-    expect(patch).toContain('name: dsh-always-status-bar')
+    expect(patch).toContain('id: dsh-visible-action-row')
+    expect(patch).toContain('name: dsh-visible-action-row')
     const insertions = patch.match(/^\s*- id:/gm) ?? []
     expect(insertions).toHaveLength(1)
   })
@@ -60,16 +60,16 @@ describe('built artifacts', () => {
   it('client bundle is a classic script registering the module-loader handoff', () => {
     const client = readFileSync(new URL('lib/client.js', root), 'utf8')
     expect(client).toContain('window.__ModuleLoader__.load(')
-    expect(client).toContain(`id: "dsh-always-status-bar"`)
+    expect(client).toContain(`id: "dsh-visible-action-row"`)
     expect(client).toContain('factory: (require) =>')
     expect(client).toContain('return module.exports')
-    expect(client).toContain('[data-time-hover-root]')
+    expect(client).toContain('[data-clock]')
     expect(client).not.toMatch(/^\s*(import|export)\s/m)
   })
 
   it('node half is an ESM module exporting the plugin shape', () => {
     const index = readFileSync(new URL('lib/index.js', root), 'utf8')
-    expect(index).toContain('dsh-always-status-bar')
+    expect(index).toContain('dsh-visible-action-row')
     expect(index).toContain('export')
   })
 })

@@ -1,0 +1,36 @@
+/*
+ * dsh-visible-action-row override.
+ *
+ * DSH hides the whole per-message action row — copy / like / dislike / branch
+ * controls, the timestamp, extra actions contributed by other plugins, and the
+ * detailed-usage pill — and reveals it only on hover or focus. The row keeps
+ * its space while hidden (opacity, not display), so layout never shifts and
+ * the whole feature is a pure visibility override.
+ *
+ * Two hiding mechanisms exist across DSH versions:
+ *
+ * - Current (packages/client/ui-chat >= 0.2.x): the actions row's root div
+ *   carries `data-clock` (MessageIconActions.tsx). MessageIconActions.module.css
+ *   hides it under `@media (hover: hover)` for rows whose container has
+ *   `data-actions-reveal="hover"` (set by TurnTailNodeView.tsx: the newest
+ *   response gets "always"), and for user/steering flow rows followed by
+ *   another user/steering row (`:has(~ ...)`). Only the newest turn escapes it.
+ * - Legacy (packages/client/ui-conversation <= 0.1.0-rc.x): only the timestamp
+ *   span (`timeStart` / `timeEnd`) was hidden inside a `data-time-hover-root`
+ *   scope.
+ *
+ * Both rules below cancel that hiding, so every message's action row keeps the
+ * visible state the newest turn already has. `!important` is required: the
+ * native declaration is an ordinary rule and this plugin's stylesheet order is
+ * not ours to control. No other property is touched — fonts, colors, spacing,
+ * alignment, button behavior and the row's own hover effects stay native.
+ */
+[data-chat-flow-kind] [data-clock],
+[data-actions-reveal] [data-clock] {
+  opacity: 1 !important;
+}
+
+/* Legacy DSH builds (ui-conversation <= 0.1.0-rc.x). */
+[data-time-hover-root] :is([class*="timeStart"], [class*="timeEnd"]) {
+  opacity: 1 !important;
+}

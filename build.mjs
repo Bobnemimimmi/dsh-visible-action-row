@@ -1,5 +1,5 @@
 /**
- * Build both halves of the dsh-always-status-bar package with esbuild.
+ * Build both halves of the dsh-visible-action-row package with esbuild.
  *
  * - `lib/index.js`  — the node half (ESM): a no-op Cordis plugin the host
  *   Loader imports for the bundle's patch row.
@@ -14,7 +14,7 @@
  */
 import { build } from 'esbuild'
 
-const PACKAGE_ID = 'dsh-always-status-bar'
+const PACKAGE_ID = 'dsh-visible-action-row'
 
 const clientBanner = [
   `window.__ModuleLoader__.load({`,

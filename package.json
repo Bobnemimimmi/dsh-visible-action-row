@@ -1,14 +1,14 @@
 {
-  "name": "dsh-always-status-bar",
+  "name": "dsh-visible-action-row",
   "version": "0.1.0",
-  "description": "DSH Web UI plugin: keep the native per-message status line (date | time, run duration, TTFT, tokens/s) always visible without hovering",
+  "description": "DSH (web and desktop) plugin: keep every message's action row — copy/like/dislike/branch controls, timestamp, and third-party additions — always visible without hovering",
   "keywords": [
     "dsh",
     "dsh-plugin",
     "deepseek-harness",
     "web",
     "ui",
-    "status-bar"
+    "action-row"
   ],
   "homepage": "https://github.com/Bobnemimimmi/dsh-always-status-bar#readme",
   "bugs": {
