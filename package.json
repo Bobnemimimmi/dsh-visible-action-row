@@ -1,6 +1,6 @@
 {
   "name": "dsh-visible-action-row",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "DSH (web and desktop) plugin: keep every message's action row — copy/like/dislike/branch controls, timestamp, and third-party additions — always visible without hovering",
   "keywords": [
     "dsh",
@@ -10,13 +10,13 @@
     "ui",
     "action-row"
   ],
-  "homepage": "https://github.com/Bobnemimimmi/dsh-always-status-bar#readme",
+  "homepage": "https://github.com/Bobnemimimmi/dsh-visible-action-row#readme",
   "bugs": {
-    "url": "https://github.com/Bobnemimimmi/dsh-always-status-bar/issues"
+    "url": "https://github.com/Bobnemimimmi/dsh-visible-action-row/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Bobnemimimmi/dsh-always-status-bar.git"
+    "url": "git+https://github.com/Bobnemimimmi/dsh-visible-action-row.git"
   },
   "license": "MIT",
   "author": "Bobnemimimmi <haoran020924@gmail.com>",
